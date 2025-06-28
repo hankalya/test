@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>베들레헴의 별: 인터랙티브 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Celestial Mystery -->
+    <!-- Application Structure Plan: A single-page, scrollable infographic divided into thematic sections: 1. Hero/Intro, 2. Biblical Clues (cards), 3. Hypotheses Comparison (grid layout of cards), 4. Deep Dive on Planetary Conjunctions (featuring an interactive timeline chart), 5. Retrograde Motion explanation (diagram), 6. Other Theories, 7. Conclusion. A sticky navigation bar will provide easy access to sections. This structure was chosen to guide the user through a narrative journey, from the initial mystery to the scientific evidence, culminating in an interactive exploration of the most plausible theory, which is more engaging than a linear blog post. -->
+    <!-- Visualization & Content Choices: Biblical Clues -> Goal: Inform -> Method: 4 styled cards with Unicode icons. | Hypotheses Comparison (Comet/Supernova) -> Goal: Compare -> Method: Cards with pros/cons lists for quick analysis. | Planetary Conjunctions Data -> Goal: Explore Change over Time -> Method: Interactive scatter plot timeline with Chart.js. Clicking a point updates a detail view. Justification: This transforms static date listings into a hands-on experience, making the temporal relationships clear. | Retrograde Motion -> Goal: Organize/Explain -> Method: A simple diagram using styled HTML/CSS divs to visually represent the concept without SVG. -> Library/Method: Chart.js for Canvas chart, HTML/CSS for diagram. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8f9fa; }
+        .bg-deep-space { background-color: #0c1446; }
+        .text-gold { color: #ffc107; }
+        .border-gold { border-color: #ffc107; }
+        .bg-gold { background-color: #ffc107; }
+        .nav-link.active { color: #ffc107; border-bottom-width: 2px; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; min-height: 350px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <nav id="navbar" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <div class="text-xl font-bold text-deep-space">베들레헴의 별</div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#clues" class="nav-link font-medium text-gray-600 hover:text-gold border-b-2 border-transparent transition-all">성경의 단서</a>
+                    <a href="#hypotheses" class="nav-link font-medium text-gray-600 hover:text-gold border-b-2 border-transparent transition-all">과학적 가설</a>
+                    <a href="#conjunctions" class="nav-link font-medium text-gray-600 hover:text-gold border-b-2 border-transparent transition-all">행성 합 탐구</a>
+                    <a href="#conclusion" class="nav-link font-medium text-gray-600 hover:text-gold border-b-2 border-transparent transition-all">결론</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="hero" class="bg-deep-space text-white text-center py-20 md:py-32">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">과학의 눈으로 다시 본 베들레헴의 별</h1>
+                <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">2천 년 전 밤하늘의 미스터리, 단순한 전설이었을까요? 아니면 실제 천문 현상이었을까요? 성경의 단서와 과학적 가설을 통해 그 진실을 탐사해봅니다.</p>
+            </div>
+        </section>
+
+        <section id="clues" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12 text-deep-space">성경 속 4가지 단서</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                        <div class="text-5xl mb-4">✨</div><h3 class="text-xl font-bold mb-2">특별한 징조</h3><p>단순한 별이 아닌 '왕의 탄생'을 알리는 특별한 의미를 지닌 현상이었습니다.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                        <div class="text-5xl mb-4">🌍</div><h3 class="text-xl font-bold mb-2">광범위한 관측</h3><p>'동방'에서부터 보였고 예루살렘의 왕도 인지할 정도로 밝고 두드러졌습니다.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                        <div class="text-5xl mb-4">➡️</div><h3 class="text-xl font-bold mb-2">움직임과 멈춤</h3><p>동방박사들을 베들레헴까지 인도했으며, 특정 장소 위에 '멈춰' 섰습니다.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                        <div class="text-5xl mb-4">👑</div><h3 class="text-xl font-bold mb-2">상징적 의미</h3><p>천문 현상 자체보다 그 안에 담긴 '유대인의 왕' 탄생이라는 상징성이 중요했습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hypotheses" class="py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12 text-deep-space">과학적 가설 비교 분석</h2>
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <h3 class="text-2xl font-bold mb-4 text-center">혜성</h3>
+                        <p class="text-center mb-6">갑작스러운 등장과 장엄한 모습은 매력적이지만, 여러 한계를 가집니다.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start"><span class="text-xl mr-3">👍</span><span>'새로운 별'의 시각적 이미지와 부합합니다.</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👎</span><span>고대 문화에서 주로 '불길한 징조'로 여겨졌습니다.</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👎</span><span>해당 시기에 대한 결정적인 관측 기록이 부족합니다.</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👎</span><span>하늘에서 '멈추는' 현상을 설명하기 어렵습니다.</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-deep-space text-white rounded-xl shadow-2xl p-8 border-4 border-gold scale-105">
+                        <h3 class="text-2xl font-bold mb-4 text-center text-gold">행성들의 합 (가장 유력)</h3>
+                        <p class="text-center mb-6 text-gray-300">여러 행성이 겹쳐 보이는 현상으로, 성경의 단서와 가장 잘 부합합니다.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start"><span class="text-xl mr-3">👍</span><span>고대 점성술의 '상징성'과 일치합니다 (왕의 행성 등).</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👍</span><span>'움직임'과 '멈춤'을 행성의 역행 운동으로 설명 가능합니다.</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👍</span><span>실제 탄생 추정 시기에 여러 중요한 합 현상이 있었습니다.</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👍</span><span>새로운 별처럼 매우 밝게 보일 수 있습니다.</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-xl p-8">
+                        <h3 class="text-2xl font-bold mb-4 text-center">초신성</h3>
+                        <p class="text-center mb-6">별의 극적인 폭발은 '새로운 별'의 등장에 대한 강력한 설명입니다.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start"><span class="text-xl mr-3">👍</span><span>매우 밝고 갑작스럽게 나타나 관측이 용이합니다.</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👎</span><span>역시 결정적인 국제적 관측 기록이 부족합니다.</span></div>
+                            <div class="flex items-start"><span class="text-xl mr-3">👎</span><span>하늘의 특정 지점에서 폭발하므로 움직일 수 없습니다.</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conjunctions" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-deep-space">타임라인으로 보는 행성 합 탐구</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">예수 탄생 추정 시기에는 천문학적으로 매우 중요한 행성 합 현상들이 여러 차례 있었습니다. 타임라인의 포인트를 클릭하여 각 사건을 자세히 살펴보세요.</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="conjunctionChart"></canvas>
+                </div>
+                <div id="conjunctionInfo" class="mt-8 max-w-3xl mx-auto bg-gray-50 p-6 rounded-lg shadow-inner min-h-[180px] transition-all duration-500">
+                    <h3 id="infoTitle" class="text-xl font-bold text-deep-space mb-2">타임라인의 포인트를 클릭하세요</h3>
+                    <p id="infoDesc" class="text-gray-700">각 사건은 동방박사들이 '왕의 탄생'을 확신하게 된 중요한 천문학적, 점성술적 의미를 가집니다.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="retrograde" class="py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-deep-space">'별의 멈춤'은 착시 현상이었을까?</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">행성의 <span class="font-bold text-gold bg-deep-space px-2 py-1 rounded">역행 운동</span>은 '별이 멈추는' 현상을 가장 합리적으로 설명합니다.</p>
+                </div>
+                <div class="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-bold mb-3">역행 운동 (Retrograde Motion)</h3>
+                        <p class="text-gray-700">지구와 다른 행성은 각기 다른 속도로 태양 주위를 돕니다. 이 속도 차이 때문에 지구에서 볼 때 외행성(화성, 목성 등)이 하늘에서 잠시 뒤로 가는 것처럼 보이는 착시 현상이 일어납니다. 이 방향 전환 지점에서 행성은 며칠간 거의 멈춰있는 것처럼 보이게 됩니다.</p>
+                    </div>
+                    <div class="w-full md:w-1/2 flex justify-center items-center h-48">
+                        <div class="relative w-full h-full flex items-center justify-center">
+                            <div class="absolute w-20 h-20 bg-yellow-300 rounded-full flex items-center justify-center font-bold">태양</div>
+                            <div class="absolute w-40 h-40 border-2 border-dashed border-blue-400 rounded-full animate-spin" style="animation-duration: 20s;">
+                                <div class="absolute top-1/2 -mt-2 w-4 h-4 bg-blue-500 rounded-full"></div>
+                            </div>
+                            <div class="absolute w-64 h-64 border-2 border-dashed border-red-400 rounded-full animate-spin" style="animation-duration: 40s;">
+                               <div class="absolute top-1/2 -mt-2 w-4 h-4 bg-red-500 rounded-full"></div>
+                            </div>
+                            <p class="absolute bottom-0 text-xs text-gray-500">간단한 궤도 모델 (파랑: 지구, 빨강: 외행성)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="py-16 md:py-24 bg-deep-space text-white">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-3xl font-bold mb-6">결론: 과학과 신비가 만나는 지점</h2>
+                <p class="text-lg text-gray-300 max-w-4xl mx-auto mb-8">
+                    과학적 탐구는 베들레헴의 별이 '행성들의 합'이라는 매우 구체적이고 실제적인 천문 현상이었을 가능성을 강력하게 제시합니다. 이는 미스터리에 대한 합리적인 설명을 제공함과 동시에, 고대인들이 하늘을 얼마나 깊이 이해하고 그 안에서 의미를 찾으려 했는지 보여줍니다.
+                    결국 베들레헴의 별은 단순한 천문 현상을 넘어, 인류에게 오랫동안 희망과 영감, 그리고 탐구의 대상이 되어 온 위대한 미스터리입니다.
+                </p>
+                <a href="#hero" class="bg-gold text-deep-space font-bold py-3 px-8 rounded-full hover:bg-yellow-400 transition-colors text-lg">맨 위로 돌아가기</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('main section');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        const conjunctionData = {
+            'bc7': {
+                title: '기원전 7년: 목성-토성 삼중 합',
+                description: "독일 천문학자 케플러가 발견한 현상입니다. 목성(왕의 행성)과 토성(유대인의 행성)이 게자리에서 세 차례나 가깝게 만났습니다. 이 상징적인 만남은 '유대인의 왕' 탄생의 징조로 해석되기 충분했습니다. 이 현상의 반복성은 동방박사들이 장기간 관측하며 확신을 갖게 했을 수 있습니다."
+            },
+            'bc6': {
+                title: '기원전 6년: 목성-레굴루스 합',
+                description: '목성이 "왕의 별"로 불리는 사자자리의 가장 밝은 별 레굴루스 주위를 맴도는 현상이 있었습니다. 이는 마치 목성이 레굴루스에 왕관을 씌워주는 모습으로 해석되어, "왕의 탄생" 메시지를 더욱 강화하는 사건으로 볼 수 있습니다.'
+            },
+            'bc2': {
+                title: '기원전 2년: 금성-목성 초근접 합',
+                description: "밤하늘에서 가장 밝은 두 행성인 금성과 목성이 하늘에서 거의 겹쳐 하나의 거대한 별처럼 보였던 매우 밝은 합입니다. 시각적으로 극적이었을 이 현상은 '새로운 별'의 등장으로 해석되었을 가능성이 큽니다."
+            }
+        };
+
+        const infoTitle = document.getElementById('infoTitle');
+        const infoDesc = document.getElementById('infoDesc');
+        
+        const ctx = document.getElementById('conjunctionChart').getContext('2d');
+        const conjunctionChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                labels: ['목성-토성 삼중 합', '목성-레굴루스 합', '금성-목성 초근접 합'],
+                datasets: [{
+                    label: '주요 행성 합',
+                    data: [
+                        { x: -7, y: 0, event: 'bc7' },
+                        { x: -6, y: 0, event: 'bc6' },
+                        { x: -2, y: 0, event: 'bc2' }
+                    ],
+                    backgroundColor: '#0c1446',
+                    borderColor: '#ffc107',
+                    borderWidth: 2,
+                    pointRadius: 10,
+                    pointHoverRadius: 15,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: (e, elements) => {
+                    if (elements.length > 0) {
+                        const item = e.chart.data.datasets[elements[0].datasetIndex].data[elements[0].index];
+                        const data = conjunctionData[item.event];
+                        infoTitle.textContent = data.title;
+                        infoDesc.textContent = data.description;
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                return Array.isArray(label) ? label.join(' ') : label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear', position: 'bottom', min: -8, max: -1,
+                        title: { display: true, text: '연도 (기원전)', font: { size: 14, weight: 'bold' } },
+                        ticks: { stepSize: 1, callback: function(value) { if (value !== 0) return value; } }
+                    },
+                    y: { display: false, min: -1, max: 1 }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
